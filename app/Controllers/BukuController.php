@@ -10,4 +10,20 @@ class BukuController extends BaseController
     {
         //
     }
+
+    public function aktivitas(){
+
+    }
+
+    public function hubungan(){
+
+    }
+
+    public function statistik(){
+
+    }
+
+    public function catatan_keamanan(){
+
+    }
 }
