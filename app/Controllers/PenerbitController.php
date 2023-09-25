@@ -10,4 +10,20 @@ class PenerbitController extends BaseController
     {
         //
     }
+
+    public function profil(){
+
+    }
+
+    public function konten(){
+
+    }
+
+    public function informasi_kontak(){
+
+    }
+
+    public function email(){
+        
+    }
 }
