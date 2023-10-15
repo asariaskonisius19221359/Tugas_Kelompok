@@ -7,35 +7,61 @@ use App\Models\PeminjamanModel;
 
 class PeminjamanController extends BaseController
 {
-    public function form() {
-        // Tampilkan view form untuk input data koleksibuku
-        $this()->load->view('koleksibuku/form');
+    public function index()
+    {
+        //
     }
 
-    public function tambah() {
-        $data = array(
-            'tb_buku_id' => $this()->input->post('tb_buku_id'),
-            'nomor_koleksi' => $this()->input->post('nomor_koleksi'),
-            'status_koleksi' => $this()->input->post('status_koleksi')
-        );
-
-        $this()->KoleksiBukuModel->insert($data);
-        redirect('koleksibuku/tampil');
+    public function create()
+    {
+        $model = new PeminjamanModel();
+        $data = [
+          'tgl_peminjaman' => request()->getPost('tgl_peminjaman'),
+          'tgl_harus_kembali' => request()->getPost('tgl_harus_kembali'),
+          'tgl_kembali' => request()->getPost('tgl_kembali'),
+          'sinopsis' => request()->getPost('sinopsis'),
+          'tb_pengguna_id_peminjaman' => request()->getPost('tb_pengguna_id_peminjaman'),
+          'tb_pengguna_id_pengembalian' => request()->getPost('tb_pengguna_id_pengembalian'),
+          'tb_anggota_id' => request()->getPost('tb_anggota_id'),
+          'tb_koleksibuku_id' => request()->getPost('tb_koleksibuku_id'),
+          'denda' => request()->getPost('denda'),
+        ];
+ 
+        $id = (int) request()->getPost('id');
+        if($id > 0){
+            $r = $model->update($id, $data);
+         }else{
+             $r = $model->insert($data);
+        }
+        if($r != false){
+          return redirect()->to(base_url('peminjaman'));
+        }
+     }
+ 
+     public function show(){
+         $m = new PeminjamanModel();
+ 
+         return view('peminjaman/tampildata', [
+             'data_peminjaman' => $m->findAll()
+         ]);
+     }
+ 
+     public function form(){
+         return view('peminjaman/form');
+     }
+ 
+     public function delete(){
+         $id = request()->getPost('id');
+         $m = new PeminjamanModel();
+         $r = $m->delete($id);
+         return redirect()->to(base_url('peminjaman'));
+     }
+ 
+     public function edit($id){
+         $m = new PeminjamanModel();
+         $data = $m->where('id', $id)->first();
+         return view('peminjaman/form', [
+             'data' => $data
+         ]);
+        }
     }
-
-    public function update($id) {
-        $data = array(
-            'tb_buku_id' => $this()->input->post('tb_buku_id'),
-            'nomor_koleksi' => $this()->input->post('nomor_koleksi'),
-            'status_koleksi' => $this()->input->post('status_koleksi')
-        );
-
-        $this()->KoleksiBukuModel->update($id, $data);
-        redirect('koleksibuku/tampil');
-    }
-
-    public function hapus($id) {
-        $this()->KoleksiBukuModel->delete($id);
-        redirect('koleksibuku/tampil');
-    }
-}

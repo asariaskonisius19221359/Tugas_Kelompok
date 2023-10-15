@@ -5,45 +5,59 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\PenggunaModel;
 
-class PenggunaController extends BaseController {
-
-    public function tampil() {
-        $data['pengguna'] = $this()->PenggunaModel->getAll();
-        // Tampilkan view dengan data pengguna
-        $this()->load->view('pengguna/index', $data);
+class PenggunaController extends BaseController
+{
+    public function index()
+    {
+        //
     }
 
-    public function form() {
-        // Tampilkan view form untuk input data pengguna
-        $this()->load->view('pengguna/form');
+    public function create()
+    {
+        $model = new PenggunaModel();
+        $data = [
+          'email' => request()->getPost('email'),
+          'nama_lengkap' => request()->getPost('nama_lengkap'),
+          'tingkat' => request()->getPost('tingkat'),
+          'katasandi' => request()->getPost('katasandi'),
+          
+        ];
+ 
+        $id = (int) request()->getPost('id');
+        if($id > 0){
+            $r = $model->update($id, $data);
+         }else{
+             $r = $model->insert($data);
+        }
+        if($r != false){
+          return redirect()->to(base_url('pengguna'));
+        }
+     }
+ 
+     public function show(){
+         $m = new PenggunaModel();
+ 
+         return view('pengguna/tampildata', [
+             'data_pengguna' => $m->findAll()
+         ]);
+     }
+ 
+     public function form(){
+         return view('pengguna/form');
+     }
+ 
+     public function delete(){
+         $id = request()->getPost('id');
+         $m = new PenggunaModel();
+         $r = $m->delete($id);
+         return redirect()->to(base_url('pengguna'));
+     }
+ 
+     public function edit($id){
+         $m = new PenggunaModel();
+         $data = $m->where('id', $id)->first();
+         return view('pengguna/form', [
+             'data' => $data
+         ]);
+        }
     }
-
-    public function tambah() {
-        $data = array(
-            'email' => $this()->input->post('email'),
-            'nama_lengkap' => $this()->input->post('nama_lengkap'),
-            'tingkat' => $this()->input->post('tingkat'),
-            'kata_sandi' => $this()->input->post('kata_sandi')
-        );
-
-        $this()->PenggunaModel->insert($data);
-        redirect('pengguna/tampil');
-    }
-
-    public function update($id) {
-        $data = array(
-            'email' => $this()->input->post('email'),
-            'nama_lengkap' => $this()->input->post('nama_lengkap'),
-            'tingkat' => $this()->input->post('tingkat'),
-            'kata_sandi' => $this()->input->post('kata_sandi')
-        );
-
-        $this()->PenggunaModel->update($id, $data);
-        redirect('pengguna/tampil');
-    }
-
-    public function hapus($id) {
-        $this()->PenggunaModel->delete($id);
-        redirect('pengguna/tampil');
-    }
-}

@@ -3,44 +3,60 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\KoleksiBukuModel;
 
 class KoleksiBukuController extends BaseController
 {
-    public function tampil() {
-        $data['koleksibuku'] = $this()->KoleksiBukuModel->getAll();
-        // Tampilkan view dengan data koleksibuku
-        $this()->load->view('koleksibuku/index', $data);
+    public function index()
+    {
+        //
     }
 
-    public function form() {
-        // Tampilkan view form untuk input data koleksibuku
-        $this()->load->view('koleksibuku/form');
+    public function create()
+    {
+        $model = new KoleksiBukuModel();
+        $data = [
+          'tb_buku_id' => request()->getPost('tb_buku_id'),
+          'nomor_koleksi' => request()->getPost('nomor_koleksi'),
+          'status_koleksi' => request()->getPost('status_koleksi'),
+          
+        ];
+ 
+        $id = (int) request()->getPost('id');
+        if($id > 0){
+            $r = $model->update($id, $data);
+         }else{
+             $r = $model->insert($data);
+        }
+        if($r != false){
+          return redirect()->to(base_url('koleksibuku'));
+        }
+     }
+ 
+     public function show(){
+         $m = new KoleksiBukuModel();
+ 
+         return view('koleksibuku/tampildata', [
+             'data_koleksibuku' => $m->findAll()
+         ]);
+     }
+ 
+     public function form(){
+         return view('koleksibuku/form');
+     }
+ 
+     public function delete(){
+         $id = request()->getPost('id');
+         $m = new KoleksiBukuModel();
+         $r = $m->delete($id);
+         return redirect()->to(base_url('koleksibuku'));
+     }
+ 
+     public function edit($id){
+         $m = new KoleksiBukuModel();
+         $data = $m->where('id', $id)->first();
+         return view('koleksibuku/form', [
+             'data' => $data
+         ]);
+        }
     }
-
-    public function tambah() {
-        $data = array(
-            'tb_buku_id' => $this()->input->post('tb_buku_id'),
-            'nomor_koleksi' => $this()->input->post('nomor_koleksi'),
-            'status_koleksi' => $this()->input->post('status_koleksi')
-        );
-
-        $this()->KoleksiBukuModel->insert($data);
-        redirect('koleksibuku/tampil');
-    }
-
-    public function update($id) {
-        $data = array(
-            'tb_buku_id' => $this()->input->post('tb_buku_id'),
-            'nomor_koleksi' => $this()->input->post('nomor_koleksi'),
-            'status_koleksi' => $this()->input->post('status_koleksi')
-        );
-
-        $this()->KoleksiBukuModel->update($id, $data);
-        redirect('koleksibuku/tampil');
-    }
-
-    public function hapus($id) {
-        $this()->KoleksiBukuModel->delete($id);
-        redirect('koleksibuku/tampil');
-    }
-}

@@ -12,41 +12,49 @@ class AnggotaController extends BaseController
         //
     }
 
-    public function tampil() {
-        return view('anggota/tampil');
+    public function create(){
+        $model = new AnggotaModel();
+        $data = [
+            'email' => request()->getPost('email'),
+            'katasandi' => request()->getPost('katasandi'),
+            'nama_lengkap' => request()->getPost('nama_lengkap'),
+            'alamat' => request()->getPost('alamat'),
+        ];
+        
+        $id = (int) request ()->getPost('id');
+        if($id > 0){
+            $r = $model->update($id, $data);
+        }else{
+            $r = $model->insert($data);
+        }
+        if($r != false){
+            return redirect()->to(base_url('anggota'));
+        }
+    }
+
+    public function show(){
+        $m = new AnggotaModel();
+        return view('anggota/tampildata', [
+            'data_anggota' => $m->findAll()
+        ]);
     }
 
     public function form(){
-        return view('anggota/form');
+        return view ('anggota/form');
     }
 
-
-    
-    public function tambah(){
+    public function delete(){
+        $id = request()->getPost('id');
         $m = new AnggotaModel();
-        return $m->insert([
-            'email' =>request()->getvar('email'),
-            'katasandi' => request()->getvar('katasandi'),
-            'nama_lengkap' => request()->getvar('nama_lengkap'),
-            'alamat' => request()->getvar('alamat'),
-            
+        $r = $m->delete($id);
+        return redirect()->to(base_url('anggota'));
+    }
+
+    public function edit($id){
+        $m = new AnggotaModel();
+        $data = $m->where('id', $id)->first();
+        return view('anggota/form', [
+            'data' => $data
         ]);
-
-    }
-
-    public function update(){
-        $data = array([
-            'email' => $this()->input->post('email'),
-            'katasandi' => $this()->input->post('katasandi'),
-            'nama_lengkap' => $this()->input->post('nama_lengkap'),
-            'alamat' => $this()->input->post('alamat')
-        
-        ]);
-
-    }
-
-    public function hapus($id) {
-        $this()->AnggotaModel->delete($id);
-        redirect('anggota/tampil');
-    }
+        }
 }
