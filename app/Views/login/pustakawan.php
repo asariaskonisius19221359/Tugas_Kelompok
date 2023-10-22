@@ -1,4 +1,8 @@
-<h4>Selamat Datang Pustakawan<?=$pengguna['nama_lengkap'] ?? '' ?></h4>
+<h4>Selamat Datang Pustakawan<?=$pengguna['nama_lengkap'] ?? '' ?>
+<?php if($pengguna('tingkat') == 'PUS'){
+    }else{
+        echo "Administrator";
+    } ?></h4>
 
 <ul>
     <li><a href="<?=base_url('anggota')?>">Anggota</a></li>
